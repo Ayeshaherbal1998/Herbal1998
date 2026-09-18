@@ -39,42 +39,42 @@ Use regularly as part of your natural hair-care routine for best results.`,
         name: 'Amla Powder',
         description:
           'Traditionally used in hair-care routines and known for its nourishing properties. A key ingredient in many traditional Indian hair-care formulations.',
-        image: '/Herbal1998/images/ingredients/amla.jpg',
+        image: '/Herbal1998/images/ingredients/amla.png',
       },
       {
         id: 'hibiscus',
         name: 'Hibiscus Powder',
         description:
           'A popular traditional ingredient used to support healthy-looking hair. Known for its role in traditional hair and scalp-care practices.',
-        image: '/Herbal1998/images/ingredients/hibiscus.jpg',
+        image: '/Herbal1998/images/ingredients/hibiscus.png',
       },
       {
         id: 'fenugreek',
         name: 'Fenugreek Powder',
         description:
           'Traditionally used in natural hair and scalp-care routines. A well-known herb in traditional hair-care practices across South Asia.',
-        image: '/Herbal1998/images/ingredients/fenugreek.jpg',
+        image: '/Herbal1998/images/ingredients/fenugreek.png',
       },
       {
         id: 'bhringraj',
         name: 'Bhringraj Powder',
         description:
           'A well-known herb in traditional hair-care practices, often referred to as the "king of herbs" for hair care in Ayurvedic traditions.',
-        image: '/Herbal1998/images/ingredients/bhringraj.jpg',
+        image: '/Herbal1998/images/ingredients/bhringraj.png',
       },
       {
         id: 'shikakai',
         name: 'Shikakai Powder',
         description:
           'Traditionally used for gentle cleansing and hair care. Supports a clean, refreshed scalp when used as part of a hair-care routine.',
-        image: '/Herbal1998/images/ingredients/shikakai.jpg',
+        image: '/Herbal1998/images/ingredients/shikakai.png',
       },
       {
         id: 'neem',
         name: 'Neem Powder',
         description:
           'Commonly used in traditional scalp-care routines. Known for its role in supporting a clean and healthy-looking scalp.',
-        image: '/Herbal1998/images/ingredients/neem.jpg',
+        image: '/Herbal1998/images/ingredients/neem.png',
       },
     ],
 
