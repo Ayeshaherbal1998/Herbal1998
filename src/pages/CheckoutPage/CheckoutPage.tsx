@@ -66,11 +66,44 @@ export default function CheckoutPage() {
     if (!validate()) return;
     setSubmitting(true);
 
-
-
     const orderId = generateOrderId();
     const order = { id: orderId, items, customer: form, subtotal, shipping, total, paymentMethod, status: 'placed', createdAt: new Date().toISOString() };
     localStorage.setItem('ayesha_last_order', JSON.stringify(order));
+
+    // Build WhatsApp message with full order details
+    const itemLines = items
+      .map((item) => `  • ${item.name}${item.variantLabel ? ` (${item.variantLabel})` : ''} × ${item.quantity} = ₹${item.price * item.quantity}`)
+      .join('\n');
+
+    const paymentLabel = paymentMethod === 'gpay' ? 'Google Pay / UPI' : 'Cash on Delivery';
+
+    const message = [
+      `🌿 *New Order — Ayesha Herbal Powder*`,
+      ``,
+      `*Order ID:* ${orderId}`,
+      `*Name:* ${form.fullName}`,
+      `*Mobile:* ${form.mobileNumber}`,
+      form.email ? `*Email:* ${form.email}` : null,
+      ``,
+      `*Items Ordered:*`,
+      itemLines,
+      ``,
+      `*Subtotal:* ₹${subtotal}`,
+      `*Shipping:* ${shipping === 0 ? 'FREE' : `₹${shipping}`}`,
+      `*Total:* ₹${total}`,
+      ``,
+      `*Payment Method:* ${paymentLabel}`,
+      ``,
+      `*Shipping Address:*`,
+      `${form.address}`,
+      `${form.city}, ${form.state} – ${form.pinCode}`,
+    ]
+      .filter((line) => line !== null)
+      .join('\n');
+
+    const whatsappUrl = `https://wa.me/${businessConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+
     clearCart();
     setSubmitting(false);
     navigate('/order-confirmation');
