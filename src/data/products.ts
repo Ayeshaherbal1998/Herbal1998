@@ -119,33 +119,27 @@ Use regularly as part of your natural hair-care routine for best results.`,
     howToUse: [
       {
         step: 1,
-        title: 'Take 2–3 Spoons',
+        title: 'Mix',
         description:
-          'Take 2 to 3 spoons of Ayesha Herbal Powder into a clean bowl. Adjust quantity based on your hair length.',
+          'Take 2–3 tablespoons of Ayesha Herbal Hair Pack. Add water gradually and mix into a smooth paste.',
       },
       {
         step: 2,
-        title: 'Make a Smooth Paste',
+        title: 'Apply',
         description:
-          'Add enough water to make a smooth, lump-free paste. You can also mix with curd or coconut oil for extra nourishment.',
+          'Apply evenly to the scalp and hair, from roots to lengths. Make sure all sections are well covered.',
       },
       {
         step: 3,
-        title: 'Apply to Hair & Scalp',
+        title: 'Relax',
         description:
-          'Apply the paste evenly to your scalp and hair from root to tip. Make sure all sections are well covered.',
+          'Leave on for 15–20 minutes. Do not allow the pack to dry completely.',
       },
       {
         step: 4,
-        title: 'Leave for 30–45 Minutes',
+        title: 'Rinse',
         description:
-          'Leave the paste on for 30 to 45 minutes. You can cover with a shower cap to keep it moist and enhance absorption.',
-      },
-      {
-        step: 5,
-        title: 'Rinse & Wash',
-        description:
-          'Rinse thoroughly with plain water, then wash with a mild shampoo. Use once or twice a week for best results.',
+          'Rinse thoroughly with water. Shampoo gently if needed.',
       },
     ],
 

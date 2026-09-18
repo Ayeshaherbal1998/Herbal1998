@@ -22,7 +22,7 @@ export default function HowToUse({ steps }: HowToUseProps) {
           {/* Connecting line on desktop */}
           <div className="hidden md:block absolute top-8 left-1/2 -translate-x-1/2 w-full border-t-2 border-dashed border-[#5B7138]/30 z-0" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
             {steps.map((step) => (
               <div key={step.step} className="text-center">
                 <div className="w-14 h-14 rounded-full bg-[#2F4A24] text-white flex items-center justify-center font-bold text-lg mx-auto mb-3 shadow-md">
@@ -35,16 +35,25 @@ export default function HowToUse({ steps }: HowToUseProps) {
           </div>
         </div>
 
-        {/* Patch Test Reminder */}
-        <div className="mt-10 flex items-start gap-3 bg-white rounded-2xl p-5 border border-[#5B7138]/20 shadow-sm">
-          <AlertCircle className="text-[#6B4A2D] shrink-0 mt-0.5" size={20} />
-          <div>
-            <p className="font-semibold text-[#253022] text-sm mb-1">Patch Test Reminder</p>
-            <p className="text-sm text-[#6B4A2D] leading-relaxed">
-              Always perform a patch test before using a new hair-care product. Apply a small amount
-              to the inside of your wrist or behind your ear and wait 24 hours before full
-              application.
-            </p>
+        {/* Tips */}
+        <div className="mt-10 space-y-3">
+          <div className="flex items-start gap-3 bg-white rounded-2xl p-5 border border-[#5B7138]/20 shadow-sm">
+            <AlertCircle className="text-[#6B4A2D] shrink-0 mt-0.5" size={20} />
+            <div>
+              <p className="font-semibold text-[#253022] text-sm mb-1">Recommended Usage</p>
+              <p className="text-sm text-[#6B4A2D] leading-relaxed">
+                Use <strong>1–2 times per week</strong> for best results. Avoid contact with eyes.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 bg-white rounded-2xl p-5 border border-[#5B7138]/20 shadow-sm">
+            <AlertCircle className="text-[#6B4A2D] shrink-0 mt-0.5" size={20} />
+            <div>
+              <p className="font-semibold text-[#253022] text-sm mb-1">Patch Test Tip</p>
+              <p className="text-sm text-[#6B4A2D] leading-relaxed">
+                Do a small patch test before first use, especially for sensitive skin.
+              </p>
+            </div>
           </div>
         </div>
       </div>
