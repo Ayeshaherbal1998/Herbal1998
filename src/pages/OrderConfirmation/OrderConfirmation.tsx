@@ -13,10 +13,40 @@ export default function OrderConfirmation() {
     if (raw) setOrder(JSON.parse(raw));
   }, []);
 
+  const buildWhatsAppMessage = (o: OrderDetails) => {
+    const itemLines = o.items
+      .map((i) => `• ${i.name}${i.variantLabel ? ` (${i.variantLabel})` : ''} × ${i.quantity} = ${formatPrice(i.price * i.quantity)}`)
+      .join('\n');
+
+    const paymentNote =
+      o.paymentMethod === 'gpay'
+        ? `💳 Google Pay to ${businessConfig.googlePayNumber} — ₹${o.total}\n(Please send payment screenshot)`
+        : '💵 Cash on Delivery';
+
+    return `🌿 *New Order — Ayesha Herbal Powder* 🌿
+
+📦 *Order ID:* ${o.id}
+
+🛒 *Items Ordered:*
+${itemLines}
+
+💰 *Subtotal:* ${formatPrice(o.subtotal)}
+🚚 *Shipping:* ${o.shipping === 0 ? 'FREE' : formatPrice(o.shipping)}
+✅ *Total:* ${formatPrice(o.total)}
+
+💳 *Payment:* ${paymentNote}
+
+📍 *Delivery Address:*
+${o.customer.fullName}
+${o.customer.address}
+${o.customer.city}, ${o.customer.state} — ${o.customer.pinCode}
+📱 ${o.customer.mobileNumber}
+
+Please confirm my order. Thank you! 🙏`;
+  };
+
   const whatsappUrl = `https://wa.me/${businessConfig.whatsappNumber}?text=${encodeURIComponent(
-    order
-      ? `Hi! My order ${order.id} has been placed. Please confirm.`
-      : businessConfig.whatsappDefaultMessage
+    order ? buildWhatsAppMessage(order) : businessConfig.whatsappDefaultMessage
   )}`;
 
   return (
@@ -118,17 +148,22 @@ export default function OrderConfirmation() {
                 </div>
 
                 {/* Payment */}
-                <p className="text-sm text-[#6B4A2D] mb-6">
-                  <span className="font-semibold text-[#253022]">Payment: </span>
-                  {order.paymentMethod === 'cod'
-                    ? 'Cash on Delivery'
-                    : order.paymentMethod === 'upi'
-                    ? 'UPI'
-                    : order.paymentMethod === 'card'
-                    ? 'Card'
-                    : 'Online Payment'}
-                  {order.paymentMethod !== 'cod' && !businessConfig.paymentEnabled && ' (Demo)'}
-                </p>
+                {order.paymentMethod === 'gpay' ? (
+                  <div className="bg-[#e8f5e9] border border-[#4caf50]/30 rounded-xl p-4 mb-6">
+                    <p className="font-bold text-[#2F4A24] text-sm mb-2">⚠️ Complete Your Payment</p>
+                    <p className="text-sm text-[#2F4A24] mb-2">
+                      Send <strong>{formatPrice(order.total)}</strong> via Google Pay to:
+                    </p>
+                    <p className="text-2xl font-bold text-[#2F4A24] text-center tracking-widest mb-1">
+                      {businessConfig.googlePayNumber}
+                    </p>
+                    <p className="text-xs text-[#6B4A2D] text-center">{businessConfig.googlePayName}</p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[#6B4A2D] mb-6">
+                    <span className="font-semibold text-[#253022]">Payment: </span>Cash on Delivery
+                  </p>
+                )}
               </>
             ) : (
               <p className="text-[#6B4A2D] text-center py-6">
@@ -152,7 +187,7 @@ export default function OrderConfirmation() {
                 className="flex-1 text-center bg-[#25D366] hover:bg-[#20BD5C] text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 <MessageCircle size={16} />
-                Contact Us
+                {order?.paymentMethod === 'gpay' ? 'Confirm Order on WhatsApp' : 'Contact Us'}
               </a>
             </div>
           </div>

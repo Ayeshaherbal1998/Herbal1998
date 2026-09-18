@@ -66,22 +66,68 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Product Image */}
+            {/* Blended Brand Visual */}
             <div className="flex justify-center lg:justify-end relative">
-              <div className="relative w-80 h-80 sm:w-96 sm:h-96">
-                {/* Decorative ring */}
+              <div className="relative w-80 h-80 sm:w-96 sm:h-96 flex items-center justify-center">
+
+                {/* Outer glow rings */}
                 <div className="absolute inset-0 rounded-full bg-[#2F4A24]/10 scale-110" />
-                <div className="absolute inset-0 rounded-full bg-[#5B7138]/8 scale-125" />
-                <img
-                  src={featuredProduct.images[0] || '/images/ayesha-product-1.jpg'}
-                  alt="Ayesha Herbal Hair Growth Powder"
-                  className="relative z-10 w-full h-full object-contain drop-shadow-xl"
-                  onError={(e) => {
-                    const el = e.target as HTMLImageElement;
-                    el.src =
-                      'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect fill="%23EFE7D5" width="400" height="400" rx="200"/%3E%3Ctext fill="%232F4A24" font-family="Georgia,serif" font-size="22" font-weight="bold" x="50%25" y="45%25" text-anchor="middle" dominant-baseline="middle"%3EAyesha Herbal%3C/text%3E%3Ctext fill="%235B7138" font-family="Georgia,serif" font-size="16" x="50%25" y="58%25" text-anchor="middle" dominant-baseline="middle"%3EHair Growth Powder%3C/text%3E%3C/svg%3E';
-                  }}
-                />
+                <div className="absolute inset-0 rounded-full bg-[#5B7138]/6 scale-125" />
+                <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#2F4A24]/25 scale-[1.08]" />
+
+                {/* Main circle — product image fills it */}
+                <div className="relative z-10 w-64 h-64 sm:w-72 sm:h-72 rounded-full overflow-hidden shadow-2xl border-4 border-[#2F4A24]/30">
+
+                  {/* Product photo as background */}
+                  <img
+                    src="/My-Website/images/ayesha-product-1.jpg"
+                    alt="Ayesha Herbal Hair Growth Powder"
+                    className="w-full h-full object-cover scale-110"
+                  />
+
+                  {/* Gradient overlay — dark at bottom for badge readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1a3010]/85 via-[#1a3010]/20 to-transparent" />
+
+                  {/* Top — small decorative dots */}
+                  <div className="absolute top-4 left-6 w-2 h-2 rounded-full bg-white/30" />
+                  <div className="absolute top-6 right-8 w-1.5 h-1.5 rounded-full bg-white/20" />
+
+                  {/* Centre — AH monogram badge */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-[#F8F4E8] border-2 border-white/60 shadow-xl flex items-center justify-center mb-2">
+                      <span className="text-[#2F4A24] text-2xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>AH</span>
+                    </div>
+                  </div>
+
+                  {/* Bottom — brand name strip */}
+                  <div className="absolute bottom-0 left-0 right-0 pb-5 flex flex-col items-center">
+                    <p className="text-white font-bold text-base tracking-wide drop-shadow-md" style={{ fontFamily: 'Georgia, serif' }}>
+                      Ayesha
+                    </p>
+                    <p className="text-[#c8d9b4] text-[10px] tracking-[0.2em] uppercase">
+                      Herbal Powder
+                    </p>
+                    <div className="mt-1.5 px-3 py-0.5 bg-white/15 backdrop-blur-sm rounded-full border border-white/20">
+                      <p className="text-[#EFE7D5] text-[9px] tracking-widest uppercase">
+                        Natural Care · Real Results
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Small floating leaf badge - top right */}
+                <div className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-[#2F4A24] border-2 border-[#F8F4E8] shadow-lg flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8d9b4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                  </svg>
+                </div>
+
+                {/* Small floating badge - bottom left */}
+                <div className="absolute bottom-4 left-4 z-20 bg-[#F8F4E8] border border-[#2F4A24]/20 rounded-full px-3 py-1 shadow-md">
+                  <p className="text-[#2F4A24] text-[9px] font-bold tracking-widest uppercase">100% Natural</p>
+                </div>
+
               </div>
             </div>
           </div>

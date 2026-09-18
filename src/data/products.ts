@@ -24,15 +24,13 @@ Bhringraj, Shikakai, and Neem — each playing a traditional role in hair and sc
 
 Use regularly as part of your natural hair-care routine for best results.`,
 
-    // Price — update with real values
-    price: 299,
-    mrp: 399,
-    discount: 25,
+    price: 199,
+    mrp: 249,
+    discount: 20,
 
-    // Replace with actual uploaded product images
     images: [
-      '/images/ayesha-product-1.jpg',
-      '/images/ayesha-product-2.jpg',
+      '/My-Website/images/ayesha-product-1.jpg',
+      '/My-Website/images/ayesha-product-2.jpg',
     ],
 
     ingredients: [
@@ -159,16 +157,16 @@ Use regularly as part of your natural hair-care routine for best results.`,
     variants: [
       {
         id: '100g',
-        label: '100g',
-        price: 299,
-        mrp: 399,
+        label: '1 Box — 100g',
+        price: 199,
+        mrp: 249,
         stock: 50,
       },
       {
-        id: '200g',
-        label: '200g',
-        price: 549,
-        mrp: 699,
+        id: '2box',
+        label: '2 Boxes — 200g (Save ₹49)',
+        price: 349,
+        mrp: 498,
         stock: 30,
       },
     ],

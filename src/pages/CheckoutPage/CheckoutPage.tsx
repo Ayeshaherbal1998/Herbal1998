@@ -1,4 +1,4 @@
-import { AlertCircle, CreditCard, IndianRupee, ShoppingBag, Smartphone } from 'lucide-react';
+import { IndianRupee, Smartphone } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -6,13 +6,11 @@ import { businessConfig } from '../../config/business';
 import type { CustomerInfo } from '../../types';
 import { formatPrice, generateOrderId } from '../../utils';
 
-type PaymentMethod = 'cod' | 'upi' | 'card' | 'online';
+type PaymentMethod = 'cod' | 'gpay';
 
 const paymentMethods: { id: PaymentMethod; label: string; icon: React.ReactNode; description: string }[] = [
   { id: 'cod', label: 'Cash on Delivery', icon: <IndianRupee size={18} />, description: 'Pay when your order arrives' },
-  { id: 'upi', label: 'UPI Payment', icon: <Smartphone size={18} />, description: 'Pay via UPI / QR code' },
-  { id: 'card', label: 'Card Payment', icon: <CreditCard size={18} />, description: 'Credit or debit card' },
-  { id: 'online', label: 'Online Payment', icon: <ShoppingBag size={18} />, description: 'Razorpay / Stripe' },
+  { id: 'gpay', label: 'Google Pay / UPI', icon: <Smartphone size={18} />, description: `Pay to ${businessConfig.googlePayNumber} & confirm on WhatsApp` },
 ];
 
 const INDIAN_STATES = [
@@ -68,10 +66,7 @@ export default function CheckoutPage() {
     if (!validate()) return;
     setSubmitting(true);
 
-    // Payment gateway integration point
-    if ((paymentMethod === 'card' || paymentMethod === 'online' || paymentMethod === 'upi') && !businessConfig.paymentEnabled) {
-      // Demo mode — proceed without real payment
-    }
+
 
     const orderId = generateOrderId();
     const order = { id: orderId, items, customer: form, subtotal, shipping, total, paymentMethod, status: 'placed', createdAt: new Date().toISOString() };
@@ -179,12 +174,23 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                {/* Demo mode notice for non-COD */}
-                {(paymentMethod !== 'cod') && !businessConfig.paymentEnabled && (
-                  <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                    <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                    <p className="text-xs text-amber-700">
-                      <strong>Demo Mode:</strong> Payment gateway not yet configured. Your order will be placed as a demo order. Contact us to complete payment.
+                {/* Google Pay instructions */}
+                {paymentMethod === 'gpay' && (
+                  <div className="mt-4 bg-[#e8f5e9] border border-[#4caf50]/30 rounded-xl p-4 space-y-2">
+                    <p className="font-bold text-[#2F4A24] text-sm flex items-center gap-2">
+                      <Smartphone size={16} /> Google Pay / UPI Instructions
+                    </p>
+                    <ol className="text-xs text-[#2F4A24] space-y-1 list-decimal list-inside">
+                      <li>Place your order by clicking <strong>"Place Order"</strong></li>
+                      <li>Open Google Pay and pay <strong>{formatPrice(total)}</strong> to:</li>
+                    </ol>
+                    <div className="bg-white rounded-lg px-4 py-3 text-center border border-[#4caf50]/30">
+                      <p className="text-xs text-[#6B4A2D]">Google Pay Number</p>
+                      <p className="text-2xl font-bold text-[#2F4A24] tracking-widest">{businessConfig.googlePayNumber}</p>
+                      <p className="text-xs text-[#5B7138] font-medium">{businessConfig.googlePayName}</p>
+                    </div>
+                    <p className="text-xs text-[#6B4A2D]">
+                      3. After payment, send your <strong>payment screenshot + Order ID</strong> to our WhatsApp to confirm your order.
                     </p>
                   </div>
                 )}
