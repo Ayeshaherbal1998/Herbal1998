@@ -4,6 +4,7 @@ import Benefits from '../../components/Benefits/Benefits';
 import HowToUse from '../../components/HowToUse/HowToUse';
 import IngredientsGrid from '../../components/Ingredients/IngredientsGrid';
 import ProductCard from '../../components/ProductCard/ProductCard';
+import Reviews from '../../components/Reviews/Reviews';
 import { products } from '../../data/products';
 
 const trustItems = [
@@ -80,7 +81,7 @@ export default function Home() {
 
                   {/* Product photo as background */}
                   <img
-                    src="/My-Website/images/ayesha-product-1.jpg"
+                    src="/Herbal1998/images/ayesha-product-1.jpg"
                     alt="Ayesha Herbal Hair Growth Powder"
                     className="w-full h-full object-cover scale-110"
                   />
@@ -183,6 +184,9 @@ export default function Home() {
 
       {/* ── How To Use ────────────────────────────────────────────────── */}
       <HowToUse steps={featuredProduct.howToUse} />
+
+      {/* ── Customer Reviews ──────────────────────────────────────────── */}
+      <Reviews />
 
       {/* ── CTA Banner ────────────────────────────────────────────────── */}
       <section className="py-16 bg-[#253022] text-white text-center">

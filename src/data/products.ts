@@ -29,8 +29,8 @@ Use regularly as part of your natural hair-care routine for best results.`,
     discount: 20,
 
     images: [
-      '/My-Website/images/ayesha-product-1.jpg',
-      '/My-Website/images/ayesha-product-2.jpg',
+      '/Herbal1998/images/ayesha-product-1.jpg',
+      '/Herbal1998/images/ayesha-product-2.jpg',
     ],
 
     ingredients: [
@@ -119,33 +119,33 @@ Use regularly as part of your natural hair-care routine for best results.`,
     howToUse: [
       {
         step: 1,
-        title: 'Take the Powder',
+        title: 'Take 2–3 Spoons',
         description:
-          'Take the recommended quantity of Ayesha Herbal Powder. (Quantity as directed on the packaging or by your practitioner.)',
+          'Take 2 to 3 spoons of Ayesha Herbal Powder into a clean bowl. Adjust quantity based on your hair length.',
       },
       {
         step: 2,
-        title: 'Mix Well',
+        title: 'Make a Smooth Paste',
         description:
-          'Mix with water or another approved ingredient according to product instructions to form a smooth paste.',
+          'Add enough water to make a smooth, lump-free paste. You can also mix with curd or coconut oil for extra nourishment.',
       },
       {
         step: 3,
-        title: 'Apply Evenly',
+        title: 'Apply to Hair & Scalp',
         description:
-          'Apply the prepared mixture evenly to the scalp and hair, ensuring thorough coverage from root to tip.',
+          'Apply the paste evenly to your scalp and hair from root to tip. Make sure all sections are well covered.',
       },
       {
         step: 4,
-        title: 'Leave for Recommended Time',
+        title: 'Leave for 30–45 Minutes',
         description:
-          'Leave for the recommended duration as specified on the packaging. Do not exceed the suggested time.',
+          'Leave the paste on for 30 to 45 minutes. You can cover with a shower cap to keep it moist and enhance absorption.',
       },
       {
         step: 5,
-        title: 'Rinse Thoroughly',
+        title: 'Rinse & Wash',
         description:
-          'Rinse thoroughly with water until completely clean. Follow with your usual hair-care routine if desired.',
+          'Rinse thoroughly with plain water, then wash with a mild shampoo. Use once or twice a week for best results.',
       },
     ],
 
