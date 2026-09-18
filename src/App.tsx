@@ -11,6 +11,7 @@ import Home from './pages/Home/Home';
 import IngredientsPage from './pages/IngredientsPage/IngredientsPage';
 import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation';
 import Product from './pages/Product/Product';
+import ReviewsPage from './pages/ReviewsPage/ReviewsPage';
 import Shop from './pages/Shop/Shop';
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/ingredients" element={<IngredientsPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />

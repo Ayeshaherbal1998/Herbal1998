@@ -1,8 +1,12 @@
 import { products } from '../../data/products';
 
-const ingredientColors: Record<string, string> = {
-  amla: '#4a7c2f', hibiscus: '#8b3a52', fenugreek: '#7c6030',
-  bhringraj: '#2f5a3a', shikakai: '#5a4a2f', neem: '#3a6b2f',
+const ingredientMeta: Record<string, { gradient: string; letter: string }> = {
+  amla:      { gradient: 'linear-gradient(145deg, #1c6b2a 0%, #4fa840 60%, #82c45a 100%)', letter: 'A' },
+  hibiscus:  { gradient: 'linear-gradient(145deg, #7b1034 0%, #c0284f 60%, #e55a78 100%)', letter: 'H' },
+  fenugreek: { gradient: 'linear-gradient(145deg, #7a5510 0%, #c49030 60%, #e8c060 100%)', letter: 'F' },
+  bhringraj: { gradient: 'linear-gradient(145deg, #173b20 0%, #2d6b38 60%, #52a05a 100%)', letter: 'B' },
+  shikakai:  { gradient: 'linear-gradient(145deg, #4a2c10 0%, #8a5a30 60%, #ba8a58 100%)', letter: 'S' },
+  neem:      { gradient: 'linear-gradient(145deg, #1e4f10 0%, #3d8a28 60%, #65bb42 100%)', letter: 'N' },
 };
 
 export default function IngredientsPage() {
@@ -30,39 +34,45 @@ export default function IngredientsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {ingredients.map((ing, i) => {
-            const color = ingredientColors[ing.id] ?? '#2F4A24';
+            const meta = ingredientMeta[ing.id] ?? { gradient: 'linear-gradient(145deg,#2F4A24,#5B7138)', letter: ing.name.charAt(0).toUpperCase() };
             return (
               <div
                 key={ing.id}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#EFE7D5] hover:shadow-md transition-shadow"
+                className="bg-white rounded-2xl overflow-hidden shadow-md border border-[#EFE7D5] hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
-                {/* Color band */}
-                <div
-                  className="h-32 flex items-center justify-center"
-                  style={{ background: color }}
-                >
-                  <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/40">
-                    <img
-                      src={ing.image}
-                      alt={ing.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const el = e.target as HTMLImageElement;
-                        el.style.display = 'none';
-                        (el.parentElement as HTMLElement).innerHTML = `<span class="text-white text-4xl font-bold">${ing.name.charAt(0)}</span>`;
-                      }}
-                    />
+                {/* Photo / Gradient area */}
+                <div className="relative h-52 overflow-hidden" style={{ background: meta.gradient }}>
+                  {/* Real photo — shown if it loads */}
+                  <img
+                    src={ing.image}
+                    alt={ing.name}
+                    className="w-full h-full object-cover opacity-90"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+
+                  {/* Decorative dots */}
+                  <div className="absolute top-4 left-5 w-3 h-3 rounded-full bg-white/20" />
+                  <div className="absolute top-7 left-10 w-2 h-2 rounded-full bg-white/15" />
+                  <div className="absolute bottom-6 left-6 w-2 h-2 rounded-full bg-white/20" />
+
+                  {/* Letter Badge — top right */}
+                  <div className="absolute top-4 right-4 w-14 h-14 rounded-full bg-white/25 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center shadow-lg">
+                    <span className="text-white text-2xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>
+                      {meta.letter}
+                    </span>
                   </div>
                 </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
+
+                {/* Content area */}
+                <div className="p-5">
+                  <div className="flex items-center gap-3 mb-3">
                     <span
-                      className="w-6 h-6 rounded-full text-white text-xs flex items-center justify-center font-bold"
-                      style={{ background: color }}
+                      className="w-7 h-7 rounded-full text-white text-xs flex items-center justify-center font-bold shrink-0 shadow-sm"
+                      style={{ background: ingredientMeta[ing.id]?.gradient ?? '#2F4A24' }}
                     >
                       {i + 1}
                     </span>
-                    <h3 className="font-bold text-[#253022] text-lg">{ing.name}</h3>
+                    <h3 className="font-bold text-[#253022] text-lg leading-tight">{ing.name}</h3>
                   </div>
                   <p className="text-[#6B4A2D] text-sm leading-relaxed">{ing.description}</p>
                 </div>
