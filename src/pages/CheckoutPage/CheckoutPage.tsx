@@ -1,8 +1,10 @@
-import { IndianRupee, Smartphone } from 'lucide-react';
+import { AlertCircle, IndianRupee, Loader2, RefreshCw, Smartphone } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { businessConfig } from '../../config/business';
+import { isBackendEnabled } from '../../config/api';
+import { submitOrder } from '../../services/orderService';
 import type { CustomerInfo } from '../../types';
 import { formatPrice, generateOrderId } from '../../utils';
 
@@ -31,9 +33,12 @@ export default function CheckoutPage() {
   const [form, setForm] = useState<CustomerInfo>({
     fullName: '', mobileNumber: '', email: '', address: '', city: '', state: '', pinCode: '',
   });
+  const [customerNotes, setCustomerNotes] = useState('');
   const [errors, setErrors] = useState<Partial<CustomerInfo>>({});
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
 
   if (items.length === 0) {
     navigate('/cart');
@@ -59,54 +64,110 @@ export default function CheckoutPage() {
     if (errors[name as keyof CustomerInfo]) {
       setErrors((er) => ({ ...er, [name]: '' }));
     }
+    setSubmitError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    if (submitting) return; // prevent double submit
+
     setSubmitting(true);
+    setSubmitError('');
 
-    const orderId = generateOrderId();
-    const order = { id: orderId, items, customer: form, subtotal, shipping, total, paymentMethod, status: 'placed', createdAt: new Date().toISOString() };
-    localStorage.setItem('ayesha_last_order', JSON.stringify(order));
+    // Generate idempotency key once per form session (persisted across retries)
+    const idempotencyKey = `${form.mobileNumber}-${Date.now()}-${retryCount}`;
 
-    // Build WhatsApp message with full order details
-    const itemLines = items
-      .map((item) => `  • ${item.name}${item.variantLabel ? ` (${item.variantLabel})` : ''} × ${item.quantity} = ₹${item.price * item.quantity}`)
-      .join('\n');
+    try {
+      let orderId: string;
+      let finalTotal = total;
+      let finalSubtotal = subtotal;
+      let finalShipping = shipping;
 
-    const paymentLabel = paymentMethod === 'gpay' ? 'Google Pay / UPI' : 'Cash on Delivery';
+      if (isBackendEnabled()) {
+        // Submit to Google Sheets backend
+        const result = await submitOrder({
+          customer: form,
+          items,
+          paymentMethod,
+          customerNotes,
+          idempotencyKey,
+        });
 
-    const message = [
-      `🌿 *New Order — Ayesha Herbal Powder*`,
-      ``,
-      `*Order ID:* ${orderId}`,
-      `*Name:* ${form.fullName}`,
-      `*Mobile:* ${form.mobileNumber}`,
-      form.email ? `*Email:* ${form.email}` : null,
-      ``,
-      `*Items Ordered:*`,
-      itemLines,
-      ``,
-      `*Subtotal:* ₹${subtotal}`,
-      `*Shipping:* ${shipping === 0 ? 'FREE' : `₹${shipping}`}`,
-      `*Total:* ₹${total}`,
-      ``,
-      `*Payment Method:* ${paymentLabel}`,
-      ``,
-      `*Shipping Address:*`,
-      `${form.address}`,
-      `${form.city}, ${form.state} – ${form.pinCode}`,
-    ]
-      .filter((line) => line !== null)
-      .join('\n');
+        if (!result.success) {
+          throw new Error(result.error || 'Order submission failed. Please try again.');
+        }
 
-    const whatsappUrl = `https://wa.me/${businessConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+        orderId = result.orderId!;
+        finalTotal = result.total ?? total;
+        finalSubtotal = result.subtotal ?? subtotal;
+        finalShipping = result.shipping ?? shipping;
+      } else {
+        // Fallback: local order only (WhatsApp notification)
+        orderId = generateOrderId();
+      }
 
-    clearCart();
-    setSubmitting(false);
-    navigate('/order-confirmation');
+      // Save order details for confirmation page
+      const order = {
+        id: orderId,
+        items,
+        customer: form,
+        subtotal: finalSubtotal,
+        shipping: finalShipping,
+        total: finalTotal,
+        paymentMethod,
+        customerNotes,
+        status: 'New',
+        createdAt: new Date().toISOString(),
+        savedToSheets: isBackendEnabled(),
+      };
+      localStorage.setItem('ayesha_last_order', JSON.stringify(order));
+
+      // Build WhatsApp message
+      const itemLines = items
+        .map((item) => `  • ${item.name}${item.variantLabel ? ` (${item.variantLabel})` : ''} × ${item.quantity} = ₹${item.price * item.quantity}`)
+        .join('\n');
+
+      const paymentLabel = paymentMethod === 'gpay' ? 'Google Pay / UPI' : 'Cash on Delivery';
+
+      const message = [
+        `🌿 *New Order — Ayesha Herbal Powder*`,
+        ``,
+        `*Order ID:* ${orderId}`,
+        `*Name:* ${form.fullName}`,
+        `*Mobile:* ${form.mobileNumber}`,
+        form.email ? `*Email:* ${form.email}` : null,
+        customerNotes ? `*Notes:* ${customerNotes}` : null,
+        ``,
+        `*Items Ordered:*`,
+        itemLines,
+        ``,
+        `*Subtotal:* ₹${finalSubtotal}`,
+        `*Shipping:* ${finalShipping === 0 ? 'FREE' : `₹${finalShipping}`}`,
+        `*Total:* ₹${finalTotal}`,
+        ``,
+        `*Payment Method:* ${paymentLabel}`,
+        ``,
+        `*Shipping Address:*`,
+        `${form.address}`,
+        `${form.city}, ${form.state} – ${form.pinCode}`,
+      ]
+        .filter((line) => line !== null)
+        .join('\n');
+
+      const whatsappUrl = `https://wa.me/${businessConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+
+      clearCart();
+      navigate('/order-confirmation');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setSubmitError(msg);
+      setRetryCount((c) => c + 1);
+      // Cart is NOT cleared on failure
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass = (field: keyof CustomerInfo) =>
@@ -176,6 +237,10 @@ export default function CheckoutPage() {
                     <input name="pinCode" value={form.pinCode} onChange={handleChange} placeholder="6-digit PIN" maxLength={6} className={inputClass('pinCode')} />
                     {errors.pinCode && <p className="text-red-500 text-xs mt-1">{errors.pinCode}</p>}
                   </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-semibold text-[#253022] mb-1.5">Order Notes (optional)</label>
+                    <textarea value={customerNotes} onChange={(e) => setCustomerNotes(e.target.value)} rows={2} placeholder="Any special instructions..." className="w-full border border-[#5B7138]/30 rounded-xl px-4 py-3 text-sm text-[#253022] focus:outline-none focus:ring-2 focus:ring-[#2F4A24] resize-none" />
+                  </div>
                 </div>
               </div>
 
@@ -184,20 +249,8 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-bold text-[#253022] mb-5 font-serif-heading">Payment Method</h2>
                 <div className="space-y-3">
                   {paymentMethods.map((pm) => (
-                    <label
-                      key={pm.id}
-                      className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
-                        paymentMethod === pm.id ? 'border-[#2F4A24] bg-[#F8F4E8]' : 'border-[#EFE7D5] hover:border-[#5B7138]'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment"
-                        value={pm.id}
-                        checked={paymentMethod === pm.id}
-                        onChange={() => setPaymentMethod(pm.id)}
-                        className="accent-[#2F4A24]"
-                      />
+                    <label key={pm.id} className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-colors ${paymentMethod === pm.id ? 'border-[#2F4A24] bg-[#F8F4E8]' : 'border-[#EFE7D5] hover:border-[#5B7138]'}`}>
+                      <input type="radio" name="payment" value={pm.id} checked={paymentMethod === pm.id} onChange={() => setPaymentMethod(pm.id)} className="accent-[#2F4A24]" />
                       <span className="text-[#2F4A24]">{pm.icon}</span>
                       <div>
                         <p className="font-semibold text-[#253022] text-sm">{pm.label}</p>
@@ -207,7 +260,6 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                {/* Google Pay instructions */}
                 {paymentMethod === 'gpay' && (
                   <div className="mt-4 bg-[#e8f5e9] border border-[#4caf50]/30 rounded-xl p-4 space-y-2">
                     <p className="font-bold text-[#2F4A24] text-sm flex items-center gap-2">
@@ -223,11 +275,25 @@ export default function CheckoutPage() {
                       <p className="text-xs text-[#5B7138] font-medium">{businessConfig.googlePayName}</p>
                     </div>
                     <p className="text-xs text-[#6B4A2D]">
-                      3. After payment, send your <strong>payment screenshot + Order ID</strong> to our WhatsApp to confirm your order.
+                      3. Send your <strong>payment screenshot + Order ID</strong> to our WhatsApp to confirm.
                     </p>
                   </div>
                 )}
               </div>
+
+              {/* Retry error */}
+              {submitError && (
+                <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+                  <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-red-700 text-sm font-semibold mb-1">Order failed — your cart is saved</p>
+                    <p className="text-red-600 text-xs">{submitError}</p>
+                  </div>
+                  <button type="button" onClick={() => setSubmitError('')} className="text-red-400 hover:text-red-600 shrink-0">
+                    <RefreshCw size={16} />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Right: Order Summary */}
@@ -239,7 +305,7 @@ export default function CheckoutPage() {
                     <div key={`${item.productId}_${item.variantId ?? ''}`} className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-lg bg-[#F8F4E8] overflow-hidden shrink-0">
                         <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1"
-                          onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"%3E%3Crect fill="%23EFE7D5" width="48" height="48"/%3E%3C/svg%3E'; }} />
+                          onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48"%3E%3Crect fill="%23EFE7D5" width="48" height="48"/%3E%3C/svg%3E'; }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-[#253022] truncate">{item.name}</p>
@@ -262,13 +328,25 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full mt-5 bg-[#2F4A24] hover:bg-[#253022] disabled:opacity-60 text-white font-bold py-4 rounded-xl transition-colors text-base"
+                  className="w-full mt-5 bg-[#2F4A24] hover:bg-[#253022] disabled:opacity-60 text-white font-bold py-4 rounded-xl transition-colors text-base flex items-center justify-center gap-2"
                 >
-                  {submitting ? 'Placing Order...' : 'Place Order'}
+                  {submitting ? (
+                    <><Loader2 size={18} className="animate-spin" /> Placing Order...</>
+                  ) : submitError ? (
+                    <><RefreshCw size={18} /> Retry Order</>
+                  ) : (
+                    'Place Order'
+                  )}
                 </button>
                 <p className="text-xs text-[#6B4A2D] text-center mt-3">
                   By placing your order, you agree to our terms and conditions.
                 </p>
+
+                {isBackendEnabled() && (
+                  <p className="text-xs text-[#5B7138] text-center mt-1 flex items-center justify-center gap-1">
+                    <span>●</span> Orders saved to Google Sheets
+                  </p>
+                )}
               </div>
             </div>
           </div>

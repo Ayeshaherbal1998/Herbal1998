@@ -8,6 +8,7 @@ const navLinks = [
   { label: 'Shop', to: '/shop' },
   { label: 'Ingredients', to: '/ingredients' },
   { label: 'Reviews', to: '/reviews' },
+  { label: 'Track Order', to: '/track-order' },
   { label: 'About Us', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ];

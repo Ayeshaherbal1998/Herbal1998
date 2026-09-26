@@ -1,9 +1,10 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import Footer from './components/Footer/Footer';
 import Header from './components/Header/Header';
 import WhatsAppButton from './components/WhatsAppButton/WhatsAppButton';
 import { CartProvider } from './context/CartContext';
 import About from './pages/About/About';
+import AdminPage from './pages/Admin/AdminPage';
 import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import Contact from './pages/Contact/Contact';
@@ -13,8 +14,15 @@ import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation';
 import Product from './pages/Product/Product';
 import ReviewsPage from './pages/ReviewsPage/ReviewsPage';
 import Shop from './pages/Shop/Shop';
+import TrackOrder from './pages/TrackOrder/TrackOrder';
+
+// Pages that render their own full-screen UI (no shared header/footer)
+const STANDALONE_PATHS = ['/admin'];
 
 function Layout({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const isStandalone = STANDALONE_PATHS.some((p) => pathname.startsWith(p));
+  if (isStandalone) return <>{children}</>;
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -41,6 +49,8 @@ export default function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/admin" element={<AdminPage />} />
             {/* Catch-all */}
             <Route
               path="*"
